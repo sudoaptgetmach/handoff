@@ -6,24 +6,22 @@ import java.time.LocalDateTime;
 
 public record BookingResponseDto(
         Long id,
+        Long userId,
+        Long eventId,
         String position,
-        String status,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        Long userId,
-        String userName,
-        Long eventId
+        String status
 ) {
     public BookingResponseDto(Booking booking) {
         this(
                 booking.getId(),
+                booking.getUser().getCid(),
+                booking.getEvent().getId(),
                 booking.getPosition(),
-                booking.getStatus().toString(),
                 booking.getStartTime(),
                 booking.getEndTime(),
-                booking.getUser().getId(),
-                booking.getUser().getName(),
-                booking.getEvent().getId()
+                booking.getStatus().toString()
         );
     }
 }

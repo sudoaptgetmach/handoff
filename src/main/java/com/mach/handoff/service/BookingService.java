@@ -5,6 +5,7 @@ import com.mach.handoff.domain.bookings.dto.CreateBookingDto;
 import com.mach.handoff.domain.enums.bookings.BookingStatus;
 import com.mach.handoff.domain.events.Event;
 import com.mach.handoff.domain.user.User;
+import com.mach.handoff.exception.BookingNotFoundException;
 import com.mach.handoff.exception.EventNotFoundException;
 import com.mach.handoff.exception.UserNotFoundException;
 import com.mach.handoff.repository.BookingRepository;
@@ -50,6 +51,11 @@ public class BookingService {
         bookingRepository.save(booking);
 
         return booking;
+    }
+
+    public Booking get(Long id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new BookingNotFoundException("Booking não encontrado com id: " + id));
     }
 
 }
