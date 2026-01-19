@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findByVatsimId(Long vatsimId);
 
+    Optional<Event> findByName(String name);
+
     List<Event> findAllById(Long id);
 
     List<Event> findAllByStatus(EventStatus status);

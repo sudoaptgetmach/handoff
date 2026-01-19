@@ -1,0 +1,2 @@
+ALTER TABLE events
+    ALTER COLUMN vatsim_id DROP NOT NULL;

@@ -23,7 +23,7 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "vatsim_id", unique = true, nullable = false)
+    @Column(name = "vatsim_id", unique = true)
     private Long vatsimId;
 
     @Column(nullable = false)

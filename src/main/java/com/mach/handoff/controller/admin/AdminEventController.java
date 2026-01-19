@@ -2,14 +2,14 @@ package com.mach.handoff.controller.admin;
 
 import com.mach.handoff.domain.enums.events.EventStatus;
 import com.mach.handoff.domain.events.Event;
+import com.mach.handoff.domain.events.dto.CreateEventDto;
 import com.mach.handoff.service.EventService;
 import com.mach.handoff.service.scheduler.VatsimEventSyncService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,6 +22,20 @@ public class AdminEventController {
     public AdminEventController(EventService service, VatsimEventSyncService eventSyncService) {
         this.service = service;
         this.eventSyncService = eventSyncService;
+    }
+
+    @PostMapping("")
+    public ResponseEntity<Event> create(@RequestBody CreateEventDto event) {
+
+        Event newEvent = service.create(event);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("?eventId={id}")
+                .buildAndExpand(newEvent.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(newEvent);
     }
 
     @GetMapping("")
