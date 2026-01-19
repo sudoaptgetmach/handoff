@@ -33,15 +33,9 @@ public class BookingController {
         return ResponseEntity.created(location).body(new BookingResponseDto(newBooking));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BookingResponseDto> get(@PathVariable Long id) {
-        Booking booking = service.get(id);
-        return ResponseEntity.ok(new BookingResponseDto(booking));
-    }
-
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable Long id) {
-        service.cancelBooking(id);
+        service.cancel(id);
         return ResponseEntity.noContent().build();
     }
 }

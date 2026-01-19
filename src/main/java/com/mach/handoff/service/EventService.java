@@ -2,9 +2,10 @@ package com.mach.handoff.service;
 
 import com.mach.handoff.domain.enums.events.EventStatus;
 import com.mach.handoff.domain.events.Event;
-import com.mach.handoff.exception.NotFoundException;
 import com.mach.handoff.repository.EventRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class EventService {
@@ -14,16 +15,23 @@ public class EventService {
         this.repository = repository;
     }
 
-    public Iterable<Event> findVisibleEvents() {
-        return repository.findAllByVisibleAndStatusNot(true, EventStatus.DRAFT);
-    }
+    public List<Event> get(Long id, EventStatus status) {
+        if (id != null && status != null) {
+            return repository.findAllByIdAndStatus(id, status);
+        }
 
-    public Event findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Evento não encontrado com id: " + id));
-    }
+        if (status != null) {
+            return repository.findAllByStatus(status);
+        }
 
-    public Iterable<Event> findAll() {
+        if (id != null) {
+            return repository.findAllById(id);
+        }
+
         return repository.findAll();
+    }
+
+    public List<Event> getAllVisible() {
+        return repository.findAllByVisibleTrue();
     }
 }

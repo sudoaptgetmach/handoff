@@ -57,27 +57,7 @@ public class BookingService {
                 .orElseThrow(() -> new NotFoundException("Booking não encontrado com id: " + id));
     }
 
-    // ADMIN
-
-    public void approveBooking(Long id, User user) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
-
-        booking.approve(user);
-
-        bookingRepository.save(booking);
-    }
-
-    public void rejectBooking(Long id, User user) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
-
-        booking.reject(user);
-
-        bookingRepository.save(booking);
-    }
-
-    public void cancelBooking(Long id) {
+    public void cancel(Long id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
 
@@ -86,7 +66,42 @@ public class BookingService {
         bookingRepository.save(booking);
     }
 
-    public List<Booking> getAllByEventID(Long id) {
-        return bookingRepository.findAllByEvent_Id(id);
+    // ADMIN
+
+    public List<Booking> get(Long id, BookingStatus status) {
+        if (id != null && status != null) {
+            return bookingRepository.findAllByEvent_IdAndStatus(id, status);
+        }
+
+        if (status != null) {
+            return bookingRepository.findAllByStatus(status);
+        }
+
+        if (id != null) {
+            return bookingRepository.findAllByEvent_Id(id);
+        }
+
+        return bookingRepository.findAll();
+    }
+
+    public void approve(Long id, User user) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+
+        booking.approve(user);
+
+        List<Booking> bookings = bookingRepository.findAllOtherBookingsForEvent(user.getCid(), booking.getEvent().getId(), id);
+        bookings.forEach(Booking::cancel);
+
+        bookingRepository.save(booking);
+    }
+
+    public void reject(Long id, User user) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+
+        booking.reject(user);
+
+        bookingRepository.save(booking);
     }
 }
