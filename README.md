@@ -57,7 +57,7 @@ Consulta eventos com filtros administrativos.
 
 ### Sincronizar Eventos (VATSIM)
 
-Inicia o proocesso manual de sincronização com a API de Eventos da VATSIM.
+Inicia o processo manual de sincronização com a API de Eventos da VATSIM.
 
 - **URL:** `/admin/events/sync`
 - **Método:** `GET`
