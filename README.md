@@ -46,6 +46,13 @@ Permite que o usuário cancele sua própria solicitação.
 
 Controle de sincronização e visibilidade de eventos.
 
+### Criar um evento manualmente
+
+- **URL:** `/admin/events`
+- **Método:** `POST`
+- **Parâmetros:** `CreateEventDto`
+- **Saída:** `201 CREATED`.
+
 ### Listar Todos os Eventos
 
 Consulta eventos com filtros administrativos.
@@ -82,7 +89,7 @@ Aprova a reserva e processa cancelamentos de conflitos.
 
 - **URL:** `/admin/bookings/{id}/approve`
 - **Método:** `PATCH`
-- **Entrada:** `BookingReviewDto` 
+- **Entrada:** `BookingReviewDto`
 - **Saída:** `204 No Content`.
 
 ### Rejeitar Reserva

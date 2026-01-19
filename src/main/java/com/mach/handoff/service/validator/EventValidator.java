@@ -24,7 +24,11 @@ public class EventValidator {
     public void checkDuplicate(String name, LocalDateTime startTime, LocalDateTime endTime) {
         Optional<Event> event = repository.findByName(name);
 
-        if (event.isPresent() && (event.get().getStartTime() == startTime || event.get().getEndTime() == endTime)) {
+        if (event.isEmpty()) return;
+
+        boolean hasDuplicate = event.get().getStartTime().isEqual(startTime) || event.get().getEndTime().isEqual(endTime);
+
+        if (hasDuplicate) {
             throw new ValidationException("Já existe um evento conflitante criado.");
         }
     }

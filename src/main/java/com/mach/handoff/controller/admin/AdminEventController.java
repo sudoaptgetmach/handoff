@@ -26,7 +26,6 @@ public class AdminEventController {
 
     @PostMapping("")
     public ResponseEntity<Event> create(@RequestBody CreateEventDto event) {
-
         Event newEvent = service.create(event);
 
         URI location = ServletUriComponentsBuilder
