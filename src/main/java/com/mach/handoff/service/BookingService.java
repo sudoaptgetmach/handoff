@@ -3,17 +3,15 @@ package com.mach.handoff.service;
 import com.mach.handoff.domain.bookings.Booking;
 import com.mach.handoff.domain.bookings.dto.CreateBookingDto;
 import com.mach.handoff.domain.enums.bookings.BookingStatus;
-import com.mach.handoff.domain.events.Event;
 import com.mach.handoff.domain.user.User;
-import com.mach.handoff.exception.BookingNotFoundException;
-import com.mach.handoff.exception.EventNotFoundException;
-import com.mach.handoff.exception.UserNotFoundException;
+import com.mach.handoff.exception.NotFoundException;
 import com.mach.handoff.repository.BookingRepository;
 import com.mach.handoff.repository.EventRepository;
 import com.mach.handoff.repository.UserRepository;
+import com.mach.handoff.service.validator.BookingValidator;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class BookingService {
@@ -22,30 +20,31 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final EventRepository eventRepository;
 
-    public BookingService(UserRepository userRepository, BookingRepository bookingRepository, EventRepository eventRepository) {
+    private final BookingValidator validator;
+
+    public BookingService(UserRepository userRepository, BookingRepository bookingRepository, EventRepository eventRepository, BookingValidator validator) {
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.eventRepository = eventRepository;
+        this.validator = validator;
     }
 
     public Booking create(CreateBookingDto dto) {
-        Optional<User> user = userRepository.findByCid(dto.userId());
-        Optional<Event> event = eventRepository.findById(dto.eventId());
+        var user = userRepository.findByCid(dto.userCID())
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado."));
 
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("Usuário não encontrado.");
-        }
-        if (event.isEmpty()) {
-            throw new EventNotFoundException("Evento não encontrado.");
-        }
+        var event = eventRepository.findById(dto.eventId())
+                .orElseThrow(() -> new NotFoundException("Evento não encontrado."));
+
+        validator.validate(dto, event);
 
         Booking booking = Booking.builder()
-                .user(user.get())
-                .event(event.get())
+                .user(user)
+                .event(event)
                 .position(dto.position())
                 .startTime(dto.startTime())
                 .endTime(dto.endTime())
-                .status(BookingStatus.SOLICITADA)
+                .status(BookingStatus.SOLICITADO)
                 .build();
 
         bookingRepository.save(booking);
@@ -55,7 +54,39 @@ public class BookingService {
 
     public Booking get(Long id) {
         return bookingRepository.findById(id)
-                .orElseThrow(() -> new BookingNotFoundException("Booking não encontrado com id: " + id));
+                .orElseThrow(() -> new NotFoundException("Booking não encontrado com id: " + id));
     }
 
+    // ADMIN
+
+    public void approveBooking(Long id, User user) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+
+        booking.approve(user);
+
+        bookingRepository.save(booking);
+    }
+
+    public void rejectBooking(Long id, User user) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+
+        booking.reject(user);
+
+        bookingRepository.save(booking);
+    }
+
+    public void cancelBooking(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+
+        booking.cancel();
+
+        bookingRepository.save(booking);
+    }
+
+    public List<Booking> getAllByEventID(Long id) {
+        return bookingRepository.findAllByEvent_Id(id);
+    }
 }

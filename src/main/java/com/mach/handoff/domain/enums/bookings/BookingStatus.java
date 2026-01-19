@@ -1,20 +1,20 @@
 package com.mach.handoff.domain.enums.bookings;
 
 public enum BookingStatus {
-    SOLICITADA,
-    ATRIBUIDA,
-    REJEITADA,
-    MODIFICADA,
-    CONFIRMADA,
-    CANCELADA;
+    SOLICITADO,
+    ATRIBUIDO,
+    REJEITADO,
+    MODIFICADO,
+    CONFIRMADO,
+    CANCELADO;
 
     public boolean canTransitionTo(BookingStatus nextStatus) {
         return switch (this) {
-            case SOLICITADA ->
-                    nextStatus == ATRIBUIDA || nextStatus == REJEITADA || nextStatus == MODIFICADA || nextStatus == CANCELADA;
-            case ATRIBUIDA -> nextStatus == CONFIRMADA || nextStatus == CANCELADA || nextStatus == REJEITADA;
-            case MODIFICADA -> nextStatus == ATRIBUIDA || nextStatus == REJEITADA || nextStatus == CANCELADA;
-            case CONFIRMADA -> nextStatus == CANCELADA;
+            case SOLICITADO ->
+                    nextStatus == ATRIBUIDO || nextStatus == REJEITADO || nextStatus == MODIFICADO || nextStatus == CANCELADO;
+            case ATRIBUIDO -> nextStatus == CONFIRMADO || nextStatus == CANCELADO || nextStatus == REJEITADO;
+            case MODIFICADO -> nextStatus == ATRIBUIDO || nextStatus == REJEITADO || nextStatus == CANCELADO;
+            case CONFIRMADO -> nextStatus == CANCELADO;
             default -> false;
         };
     }

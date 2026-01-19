@@ -1,5 +1,6 @@
 package com.mach.handoff.service.scheduler;
 
+import com.mach.handoff.domain.enums.events.EventStatus;
 import com.mach.handoff.domain.events.Event;
 import com.mach.handoff.integration.dto.vatsim.VatsimAirportDto;
 import com.mach.handoff.integration.dto.vatsim.VatsimEventDto;
@@ -55,6 +56,11 @@ public class VatsimEventSyncService {
         }
     }
 
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void testarNaInicializacao() {
+//        syncEvents();
+//    }
+
     private void createEvent(VatsimEventDto dto) {
         Event newEvent = Event.builder()
                 .vatsimId(dto.id())
@@ -65,6 +71,7 @@ public class VatsimEventSyncService {
                 .startTime(ZonedDateTime.parse(dto.startTime()).toLocalDateTime())
                 .endTime(ZonedDateTime.parse(dto.endTime()).toLocalDateTime())
                 .airports(dto.airports().stream().map(VatsimAirportDto::icao).collect(Collectors.toSet()))
+                .status(EventStatus.DRAFT)
                 .build();
 
         repository.save(newEvent);

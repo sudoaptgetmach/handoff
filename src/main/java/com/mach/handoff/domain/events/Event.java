@@ -1,5 +1,6 @@
 package com.mach.handoff.domain.events;
 
+import com.mach.handoff.domain.enums.events.EventStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,4 +47,11 @@ public class Event {
     @CollectionTable(name = "event_airports", joinColumns = @JoinColumn(name = "event_id"))
     @Column(name = "icao")
     private Set<String> airports = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EventStatus status = EventStatus.DRAFT;
+
+    @Column(nullable = false)
+    private boolean visible = true;
 }

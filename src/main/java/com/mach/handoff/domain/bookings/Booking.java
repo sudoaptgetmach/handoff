@@ -3,6 +3,7 @@ package com.mach.handoff.domain.bookings;
 import com.mach.handoff.domain.enums.bookings.BookingStatus;
 import com.mach.handoff.domain.events.Event;
 import com.mach.handoff.domain.user.User;
+import com.mach.handoff.exception.DomainException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -65,4 +66,32 @@ public class Booking {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void approve(User staff) {
+        transitionTo(BookingStatus.ATRIBUIDO);
+
+        this.reviewedBy = staff.getCid();
+        this.reviewedAt = LocalDateTime.now();
+    }
+
+    public void reject(User staff) {
+        transitionTo(BookingStatus.REJEITADO);
+
+        this.reviewedBy = staff.getCid();
+        this.reviewedAt = LocalDateTime.now();
+    }
+
+    public void cancel() {
+        transitionTo(BookingStatus.CANCELADO);
+    }
+
+    private void transitionTo(BookingStatus newStatus) {
+        if (!this.status.canTransitionTo(newStatus)) {
+            throw new DomainException(
+                    String.format("Transição de status inválida: Não é possível ir de %s para %s.",
+                            this.status, newStatus)
+            );
+        }
+        this.status = newStatus;
+    }
 }

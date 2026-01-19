@@ -1,0 +1,11 @@
+ALTER TABLE events
+    ADD status VARCHAR(255);
+
+ALTER TABLE events
+    ADD visible BOOLEAN;
+
+ALTER TABLE events
+    ALTER COLUMN status SET NOT NULL;
+
+ALTER TABLE events
+    ALTER COLUMN visible SET NOT NULL;

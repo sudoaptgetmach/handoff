@@ -38,4 +38,10 @@ public class BookingController {
         Booking booking = service.get(id);
         return ResponseEntity.ok(new BookingResponseDto(booking));
     }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+        service.cancelBooking(id);
+        return ResponseEntity.noContent().build();
+    }
 }
