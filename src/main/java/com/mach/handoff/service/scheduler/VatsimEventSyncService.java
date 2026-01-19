@@ -56,11 +56,6 @@ public class VatsimEventSyncService {
         }
     }
 
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void testarNaInicializacao() {
-//        syncEvents();
-//    }
-
     private void createEvent(VatsimEventDto dto) {
         Event newEvent = Event.builder()
                 .vatsimId(dto.id())
