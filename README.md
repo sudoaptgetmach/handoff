@@ -30,7 +30,7 @@ Registra um novo interesse de um usuário em uma posição de um evento.
 - **URL:** `/bookings`
 - **Método:** `POST`
 - **Entrada:** `CreateBookingDto` (JSON)
-- **Saída:** `201 Created` - Objeto `BookingResponseDto` e cabeçalho `Location`.
+- **Saída:** `201 Created` - `BookingResponseDto`
 
 ### Cancelar Reserva
 
@@ -53,7 +53,7 @@ Consulta eventos com filtros administrativos.
 - **URL:** `/admin/events`
 - **Método:** `GET`
 - **Parâmetros:** `eventId` (opcional), `status` (opcional).
-- **Saída:** `200 OK` - Lista de objetos `Event`.
+- **Saída:** `200 OK` - Lista de `Event`.
 
 ### Sincronizar Eventos (VATSIM)
 
@@ -82,7 +82,7 @@ Aprova a reserva e processa cancelamentos de conflitos.
 
 - **URL:** `/admin/bookings/{id}/approve`
 - **Método:** `PATCH`
-- **Entrada:** `BookingReviewDto` (JSON contendo o `userCID` do admin).
+- **Entrada:** `BookingReviewDto` 
 - **Saída:** `204 No Content`.
 
 ### Rejeitar Reserva
@@ -91,5 +91,5 @@ Recusa a solicitação de reserva.
 
 - **URL:** `/admin/bookings/{id}/reject`
 - **Método:** `PATCH`
-- **Entrada:** `BookingReviewDto` (JSON contendo o `userCID` do admin).
+- **Entrada:** `BookingReviewDto`
 - **Saída:** `204 No Content`.
