@@ -3,6 +3,7 @@ package com.mach.handoff.controller.admin;
 import com.mach.handoff.domain.enums.events.EventStatus;
 import com.mach.handoff.domain.events.Event;
 import com.mach.handoff.domain.events.dto.CreateEventDto;
+import com.mach.handoff.domain.events.dto.UpdateEventDto;
 import com.mach.handoff.service.EventService;
 import com.mach.handoff.service.scheduler.VatsimEventSyncService;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,18 @@ public class AdminEventController {
         List<Event> events = service.get(eventId, status);
 
         return ResponseEntity.ok(events);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Event> update(@PathVariable Long id, @RequestBody UpdateEventDto dto) {
+        Event updatedEvent = service.update(id, dto);
+        return ResponseEntity.ok(updatedEvent);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+        service.cancel(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/sync")

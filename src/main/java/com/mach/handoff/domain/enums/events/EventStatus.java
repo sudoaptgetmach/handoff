@@ -5,5 +5,6 @@ public enum EventStatus {
     PUBLISHED,
     BOOKINGS_OPEN,
     BOOKINGS_CLOSED,
-    ENDED
+    ENDED,
+    CANCELLED
 }

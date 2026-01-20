@@ -2,6 +2,7 @@ package com.mach.handoff.repository;
 
 import com.mach.handoff.domain.bookings.Booking;
 import com.mach.handoff.domain.enums.bookings.BookingStatus;
+import com.mach.handoff.domain.events.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,4 +50,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             \s""")
     boolean isDuplicate(Long user, String position, LocalDateTime startTime, LocalDateTime endTime);
 
+    List<Booking> findAllActiveByEvent(Event event);
 }
