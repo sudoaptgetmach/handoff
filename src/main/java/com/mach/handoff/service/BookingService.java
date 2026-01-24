@@ -1,13 +1,15 @@
 package com.mach.handoff.service;
 
 import com.mach.handoff.domain.bookings.Booking;
+import com.mach.handoff.domain.bookings.dto.BookingResponseDto;
 import com.mach.handoff.domain.bookings.dto.CreateBookingDto;
 import com.mach.handoff.domain.enums.bookings.BookingStatus;
+import com.mach.handoff.domain.enums.roles.RoleName;
 import com.mach.handoff.domain.user.User;
+import com.mach.handoff.exception.ForbiddenException;
 import com.mach.handoff.exception.NotFoundException;
 import com.mach.handoff.repository.BookingRepository;
 import com.mach.handoff.repository.EventRepository;
-import com.mach.handoff.repository.UserRepository;
 import com.mach.handoff.service.validator.BookingValidator;
 import org.springframework.stereotype.Service;
 
@@ -16,27 +18,22 @@ import java.util.List;
 @Service
 public class BookingService {
 
-    private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final EventRepository eventRepository;
 
     private final BookingValidator validator;
 
-    public BookingService(UserRepository userRepository, BookingRepository bookingRepository, EventRepository eventRepository, BookingValidator validator) {
-        this.userRepository = userRepository;
+    public BookingService(BookingRepository bookingRepository, EventRepository eventRepository, BookingValidator validator) {
         this.bookingRepository = bookingRepository;
         this.eventRepository = eventRepository;
         this.validator = validator;
     }
 
-    public Booking create(CreateBookingDto dto) {
-        var user = userRepository.findByCid(dto.userCID())
-                .orElseThrow(() -> new NotFoundException("Usuário não encontrado."));
-
+    public Booking create(CreateBookingDto dto, User user) {
         var event = eventRepository.findById(dto.eventId())
                 .orElseThrow(() -> new NotFoundException("Evento não encontrado."));
 
-        validator.validate(dto, event);
+        validator.validate(dto, event, user);
 
         Booking booking = Booking.builder()
                 .user(user)
@@ -52,14 +49,24 @@ public class BookingService {
         return booking;
     }
 
-    public Booking get(Long id) {
-        return bookingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Booking não encontrado com id: " + id));
+    public List<BookingResponseDto> getMyBookings(User user) {
+        return bookingRepository.findByUserCidOrderByStartTimeDesc(user.getCid())
+                .stream()
+                .map(BookingResponseDto::new)
+                .toList();
     }
 
-    public void cancel(Long id) {
-        Booking booking = bookingRepository.findById(id)
+    public void cancel(Long bookingId, User requester) {
+        Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+
+        boolean isOwner = booking.getUser().getCid().equals(requester.getCid());
+        boolean isAdmin = requester.getRoles().stream()
+                .anyMatch(r -> r.getName() == RoleName.ADMIN || r.getName() == RoleName.STAFF);
+
+        if (!isOwner && !isAdmin) {
+            throw new ForbiddenException("Você não tem permissão para cancelar esta reserva.");
+        }
 
         booking.cancel();
 
@@ -82,6 +89,11 @@ public class BookingService {
         }
 
         return bookingRepository.findAll();
+    }
+
+    public Booking get(Long id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
     }
 
     public void approve(Long id, User user) {

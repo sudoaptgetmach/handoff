@@ -31,6 +31,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findAllByStatus(BookingStatus status);
 
+    List<Booking> findByUserCidOrderByStartTimeDesc(Long userCid);
+
     @Query("""
                  SELECT COUNT(b) > 0\s
                  FROM Booking b\s
@@ -44,11 +46,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("""
                  SELECT COUNT(b) > 0\s
                  FROM Booking b\s
-                 WHERE b.user.cid = :user\s
+                 WHERE b.user.cid = :userCid\s
                  AND b.position = :position\s
                  AND (b.startTime = :startTime AND b.endTime = :endTime)
             \s""")
-    boolean isDuplicate(Long user, String position, LocalDateTime startTime, LocalDateTime endTime);
+    boolean isDuplicate(Long userCid, String position, LocalDateTime startTime, LocalDateTime endTime);
 
     List<Booking> findAllActiveByEvent(Event event);
 }

@@ -3,6 +3,7 @@ package com.mach.handoff.service.validator;
 import com.mach.handoff.domain.bookings.dto.CreateBookingDto;
 import com.mach.handoff.domain.enums.events.EventStatus;
 import com.mach.handoff.domain.events.Event;
+import com.mach.handoff.domain.user.User;
 import com.mach.handoff.exception.ValidationException;
 import com.mach.handoff.repository.BookingRepository;
 import org.springframework.stereotype.Component;
@@ -16,9 +17,9 @@ public class BookingValidator {
         this.bookingRepository = bookingRepository;
     }
 
-    public void validate(CreateBookingDto dto, Event event) {
+    public void validate(CreateBookingDto dto, Event event, User user) {
         validateEventRules(event, dto);
-        validateAvailability(dto);
+        validateAvailability(dto, user);
     }
 
     private void validateEventRules(Event event, CreateBookingDto dto) {
@@ -38,7 +39,7 @@ public class BookingValidator {
         }
     }
 
-    private void validateAvailability(CreateBookingDto dto) {
+    private void validateAvailability(CreateBookingDto dto, User user) {
         boolean isOccupied = bookingRepository.hasConfirmedOverlap(
                 dto.position(),
                 dto.startTime(),
@@ -52,7 +53,7 @@ public class BookingValidator {
         }
 
         boolean isDuplicate = bookingRepository.isDuplicate(
-                dto.userCID(),
+                user.getCid(),
                 dto.position(),
                 dto.startTime(),
                 dto.endTime()
