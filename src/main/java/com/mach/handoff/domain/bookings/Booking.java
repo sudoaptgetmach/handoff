@@ -67,6 +67,16 @@ public class Booking {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public void confirm() {
+        transitionTo(BookingStatus.CONFIRMADO);
+    }
+
+    public void cancel() {
+        transitionTo(BookingStatus.CANCELADO);
+    }
+
+    // ADMIN
+
     public void approve(User staff) {
         transitionTo(BookingStatus.ATRIBUIDO);
 
@@ -79,10 +89,6 @@ public class Booking {
 
         this.reviewedBy = staff.getCid();
         this.reviewedAt = LocalDateTime.now();
-    }
-
-    public void cancel() {
-        transitionTo(BookingStatus.CANCELADO);
     }
 
     private void transitionTo(BookingStatus newStatus) {

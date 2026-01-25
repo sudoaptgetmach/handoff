@@ -14,6 +14,7 @@ import com.mach.handoff.service.validator.BookingValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookingService {
@@ -54,6 +55,24 @@ public class BookingService {
                 .stream()
                 .map(BookingResponseDto::new)
                 .toList();
+    }
+
+    public void confirm(Long id, User requester) {
+        Optional<Booking> bookingOpt = bookingRepository.findById(id);
+
+        if (bookingOpt.isEmpty()) {
+            throw new NotFoundException("Booking não encontrado.");
+        }
+
+        Booking booking = bookingOpt.get();
+
+        if (!requester.equals(booking.getUser())) {
+            throw new ForbiddenException("Você não pode confirmar esse booking.");
+        }
+
+        booking.confirm();
+
+        bookingRepository.save(booking);
     }
 
     public void cancel(Long bookingId, User requester) {

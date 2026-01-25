@@ -36,6 +36,13 @@ public class BookingController {
     }
 
     //todo confirm booking
+    @PatchMapping("/{id}/confirm")
+    public ResponseEntity<Void> confirm(@PathVariable Long id,
+                                        @AuthenticationPrincipal User user) {
+        service.confirm(id, user);
+
+        return ResponseEntity.ok().build();
+    }
 
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable Long id,
