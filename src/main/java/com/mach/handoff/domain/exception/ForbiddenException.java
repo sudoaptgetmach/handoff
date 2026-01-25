@@ -1,4 +1,4 @@
-package com.mach.handoff.exception;
+package com.mach.handoff.domain.exception;
 
 public class ForbiddenException extends RuntimeException {
     public ForbiddenException(String message) {

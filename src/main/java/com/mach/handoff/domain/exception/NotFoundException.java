@@ -1,4 +1,4 @@
-package com.mach.handoff.exception;
+package com.mach.handoff.domain.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

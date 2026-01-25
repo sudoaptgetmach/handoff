@@ -2,7 +2,7 @@ package com.mach.handoff.service.validator;
 
 import com.mach.handoff.domain.events.Event;
 import com.mach.handoff.domain.events.dto.CreateEventDto;
-import com.mach.handoff.exception.ValidationException;
+import com.mach.handoff.domain.exception.ValidationException;
 import com.mach.handoff.repository.EventRepository;
 import org.springframework.stereotype.Component;
 

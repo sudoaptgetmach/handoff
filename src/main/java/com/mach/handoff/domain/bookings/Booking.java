@@ -3,7 +3,7 @@ package com.mach.handoff.domain.bookings;
 import com.mach.handoff.domain.enums.bookings.BookingStatus;
 import com.mach.handoff.domain.events.Event;
 import com.mach.handoff.domain.user.User;
-import com.mach.handoff.exception.DomainException;
+import com.mach.handoff.domain.exception.DomainException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

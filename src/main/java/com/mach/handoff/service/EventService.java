@@ -5,7 +5,7 @@ import com.mach.handoff.domain.enums.events.EventStatus;
 import com.mach.handoff.domain.events.Event;
 import com.mach.handoff.domain.events.dto.CreateEventDto;
 import com.mach.handoff.domain.events.dto.UpdateEventDto;
-import com.mach.handoff.exception.NotFoundException;
+import com.mach.handoff.domain.exception.NotFoundException;
 import com.mach.handoff.repository.BookingRepository;
 import com.mach.handoff.repository.EventRepository;
 import com.mach.handoff.service.validator.EventValidator;
