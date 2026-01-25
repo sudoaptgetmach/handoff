@@ -25,7 +25,6 @@ public class BookingController {
     public ResponseEntity<BookingResponseDto> create(@RequestBody CreateBookingDto dto,
                                                      @AuthenticationPrincipal User user) {
         Booking newBooking = service.create(dto, user);
-
         return ResponseEntity.ok().body(new BookingResponseDto(newBooking));
     }
 
