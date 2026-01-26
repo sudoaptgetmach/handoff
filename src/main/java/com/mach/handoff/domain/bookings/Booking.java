@@ -46,7 +46,7 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BookingStatus status;
+    private BookingStatus status = BookingStatus.SOLICITADO;
 
     @ElementCollection
     @CollectionTable(name = "booking_staff_notes", joinColumns = @JoinColumn(name = "booking_id"))
