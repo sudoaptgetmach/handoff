@@ -153,7 +153,9 @@ class BookingServiceTest {
         requester.setId(1L);
         requester.setCid(1001L);
 
-        assertThrows(NotFoundException.class, () -> bookingService.confirm(null, requester));
+        when(bookingRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> bookingService.confirm(999L, requester));
         verify(bookingRepository, never()).save(any());
     }
 
