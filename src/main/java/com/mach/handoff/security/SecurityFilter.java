@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
+    private static final String AUTH_COOKIE_NAME = "auth_token";
+
     private final TokenService tokenService;
     private final UserRepository userRepository;
 
@@ -54,7 +56,21 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private String recoverToken(HttpServletRequest request) {
         var authHeader = request.getHeader("Authorization");
-        if (authHeader == null) return null;
-        return authHeader.replace("Bearer ", "");
+        if (authHeader != null) {
+            return authHeader.replace("Bearer ", "");
+        }
+
+        var cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+
+        for (var cookie : cookies) {
+            if (AUTH_COOKIE_NAME.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+
+        return null;
     }
 }

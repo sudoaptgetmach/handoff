@@ -25,9 +25,9 @@ public class SecurityConfigurations {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // <--- API Stateless (Sem Cookies)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login/**", "/oauth2/**", "/error").permitAll()
+                        .requestMatchers("/login/**", "/oauth2/**", "/error", "/logout").permitAll()
                         .requestMatchers("/events", "/events/{id}/roster").permitAll()
 
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "STAFF")
