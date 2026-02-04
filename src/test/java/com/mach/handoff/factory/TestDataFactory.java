@@ -4,13 +4,24 @@ import com.mach.handoff.domain.bookings.Booking;
 import com.mach.handoff.domain.bookings.dto.CreateBookingDto;
 import com.mach.handoff.domain.enums.bookings.BookingStatus;
 import com.mach.handoff.domain.enums.events.EventStatus;
+import com.mach.handoff.domain.enums.roles.RoleName;
 import com.mach.handoff.domain.events.Event;
+import com.mach.handoff.domain.roles.Role;
 import com.mach.handoff.domain.user.User;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public class TestDataFactory {
     private static final LocalDateTime BASE_TIME = LocalDateTime.of(2024, 6, 15, 10, 0);
+
+    public User createAdminUser(Long id, Long cid) {
+        User user = createTestUser(id, cid);
+        Role adminRole = new Role();
+        adminRole.setName(RoleName.ADMIN);
+        user.setRoles(Set.of(adminRole));
+        return user;
+    }
 
     public User createTestUser() {
         return createTestUser(1L, 1001L);

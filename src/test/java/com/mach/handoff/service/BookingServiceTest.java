@@ -167,6 +167,21 @@ class BookingServiceTest {
     }
 
     @Test
+    void cancel_whenRequesterIsAdminButNotOwner_success() {
+        User owner = dataFactory.createTestUser(1L, 1001L);
+        User admin = dataFactory.createAdminUser(2L, 2002L);
+
+        Booking booking = dataFactory.createBooking(owner, BookingStatus.SOLICITADO);
+
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+
+        bookingService.cancel(1L, admin);
+
+        assertEquals(BookingStatus.CANCELADO, booking.getStatus());
+        verify(bookingRepository).save(booking);
+    }
+
+    @Test
     void cancel_whenStatusIsAlreadyCancelled_throwsDomain() {
         User requester = dataFactory.createTestUser();
 
