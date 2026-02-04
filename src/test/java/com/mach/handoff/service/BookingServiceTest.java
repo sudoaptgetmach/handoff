@@ -10,6 +10,7 @@ import com.mach.handoff.domain.exception.ForbiddenException;
 import com.mach.handoff.domain.exception.NotFoundException;
 import com.mach.handoff.domain.exception.ValidationException;
 import com.mach.handoff.domain.user.User;
+import com.mach.handoff.factory.TestDataFactory;
 import com.mach.handoff.repository.BookingRepository;
 import com.mach.handoff.repository.EventRepository;
 import com.mach.handoff.service.validator.BookingValidator;
@@ -19,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,26 +39,13 @@ class BookingServiceTest {
     @InjectMocks
     private BookingService bookingService;
 
+    TestDataFactory dataFactory = new TestDataFactory();
+
     @Test
     void create_Success() {
-        User requester = new User();
-        requester.setId(1L);
-        requester.setCid(1001L);
-
-        Event event = Event.builder()
-                .id(1L)
-                .status(EventStatus.BOOKINGS_OPEN)
-                .startTime(LocalDateTime.now().plusHours(1))
-                .endTime(LocalDateTime.now().plusHours(3))
-                .visible(true)
-                .build();
-
-        CreateBookingDto dto = new CreateBookingDto(
-                "Teste",
-                1L,
-                LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(3)
-        );
+        User requester = dataFactory.createTestUser();
+        Event event = dataFactory.createOpenEvent();
+        CreateBookingDto dto = dataFactory.createDto();
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
 
@@ -77,16 +64,8 @@ class BookingServiceTest {
 
     @Test
     void create_whenEventNotFound_throwsNotFound() {
-        User requester = new User();
-        requester.setId(1L);
-        requester.setCid(1001L);
-
-        CreateBookingDto dto = new CreateBookingDto(
-                "Teste",
-                1L,
-                LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(3)
-        );
+        User requester = dataFactory.createTestUser();
+        CreateBookingDto dto = dataFactory.createDto();
 
         when(eventRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -96,26 +75,11 @@ class BookingServiceTest {
 
     @Test
     void create_whenEventRulesAreNotMet_throwsValidationError() {
-        User requester = new User();
-        requester.setId(1L);
-        requester.setCid(1001L);
+        User requester = dataFactory.createTestUser();
+        Event event = dataFactory.createEvent(EventStatus.BOOKINGS_CLOSED);
+        CreateBookingDto dto = dataFactory.createDto();
 
-        Event event = Event.builder()
-                .id(1L)
-                .status(EventStatus.BOOKINGS_CLOSED)
-                .startTime(LocalDateTime.now().plusHours(1))
-                .endTime(LocalDateTime.now().plusHours(3))
-                .visible(true)
-                .build();
-
-        CreateBookingDto dto = new CreateBookingDto(
-                "Teste",
-                1L,
-                LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(3)
-        );
-
-        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+        when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
         doThrow(new ValidationException("Regras do evento não atendidas."))
                 .when(bookingValidator)
                 .validate(dto, event, requester);
@@ -129,19 +93,12 @@ class BookingServiceTest {
 
     @Test
     void confirm_whenRequesterIsOwner_confirmsAndSaves() {
-        User requester = new User();
-        requester.setId(1L);
-        requester.setCid(1001L);
+        User requester = dataFactory.createTestUser();
+        Booking booking = dataFactory.createBooking(requester, BookingStatus.ATRIBUIDO);
 
-        Booking booking = Booking.builder()
-                .id(1L)
-                .user(requester)
-                .status(BookingStatus.ATRIBUIDO)
-                .build();
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
 
-        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
-
-        bookingService.confirm(1L, requester);
+        bookingService.confirm(booking.getId(), requester);
 
         assertEquals(BookingStatus.CONFIRMADO, booking.getStatus());
         verify(bookingRepository).save(booking);
@@ -149,9 +106,7 @@ class BookingServiceTest {
 
     @Test
     void confirm_whenBookingNotFound_throwsNotFound() {
-        User requester = new User();
-        requester.setId(1L);
-        requester.setCid(1001L);
+        User requester = dataFactory.createTestUser();
 
         when(bookingRepository.findById(999L)).thenReturn(Optional.empty());
 
@@ -161,21 +116,11 @@ class BookingServiceTest {
 
     @Test
     void confirm_whenRequesterIsNotOwner_throwsForbidden() {
-        User owner = new User();
-        owner.setId(1L);
-        owner.setCid(1001L);
+        User owner = dataFactory.createTestUser();
+        User requester = dataFactory.createTestUser(2L, 2002L);
+        Booking booking = dataFactory.createBooking(owner, BookingStatus.ATRIBUIDO);
 
-        User requester = new User();
-        requester.setId(2L);
-        requester.setCid(2002L);
-
-        Booking booking = Booking.builder()
-                .id(1L)
-                .user(owner)
-                .status(BookingStatus.ATRIBUIDO)
-                .build();
-
-        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
 
         assertThrows(ForbiddenException.class, () -> bookingService.confirm(1L, requester));
         verify(bookingRepository, never()).save(any());
@@ -183,17 +128,10 @@ class BookingServiceTest {
 
     @Test
     void confirm_whenStatusCanceladoAndTransitionIsInvalid_throwsDomain() {
-        User requester = new User();
-        requester.setId(2L);
-        requester.setCid(2002L);
+        User requester = dataFactory.createTestUser();
+        Booking booking = dataFactory.createBooking(requester, BookingStatus.CANCELADO);
 
-        Booking booking = Booking.builder()
-                .id(1L)
-                .user(requester)
-                .status(BookingStatus.CANCELADO)
-                .build();
-
-        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
 
         assertThrows(DomainException.class, () -> bookingService.confirm(1L, requester));
         verify(bookingRepository, never()).save(any());
@@ -202,17 +140,11 @@ class BookingServiceTest {
     // Cancel
     @Test
     void cancel_Success() {
-        User requester = new User();
-        requester.setId(2L);
-        requester.setCid(2002L);
+        User requester = dataFactory.createTestUser();
 
-        Booking booking = Booking.builder()
-                .id(1L)
-                .user(requester)
-                .status(BookingStatus.SOLICITADO)
-                .build();
+        Booking booking = dataFactory.createBooking(requester, BookingStatus.SOLICITADO);
 
-        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
 
         bookingService.cancel(booking.getId(), requester);
 
@@ -222,21 +154,13 @@ class BookingServiceTest {
 
     @Test
     void cancel_whenRequesterIsNotOwner_throwsForbidden() {
-        User owner = new User();
-        owner.setId(1L);
-        owner.setCid(1001L);
+        User owner = dataFactory.createTestUser();
 
-        User requester = new User();
-        requester.setId(2L);
-        requester.setCid(2002L);
+        User requester = dataFactory.createTestUser(2L, 2002L);
 
-        Booking booking = Booking.builder()
-                .id(1L)
-                .user(owner)
-                .status(BookingStatus.SOLICITADO)
-                .build();
+        Booking booking = dataFactory.createBooking(owner, BookingStatus.SOLICITADO);
 
-        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
 
         assertThrows(ForbiddenException.class, () -> bookingService.cancel(1L, requester));
         verify(bookingRepository, never()).save(any());
@@ -244,17 +168,11 @@ class BookingServiceTest {
 
     @Test
     void cancel_whenStatusIsAlreadyCancelled_throwsDomain() {
-        User requester = new User();
-        requester.setId(2L);
-        requester.setCid(2002L);
+        User requester = dataFactory.createTestUser();
 
-        Booking booking = Booking.builder()
-                .id(1L)
-                .user(requester)
-                .status(BookingStatus.CANCELADO)
-                .build();
+        Booking booking = dataFactory.createBooking(requester, BookingStatus.CANCELADO);
 
-        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
 
         assertThrows(DomainException.class, () -> bookingService.cancel(1L, requester));
         verify(bookingRepository, never()).save(any());
