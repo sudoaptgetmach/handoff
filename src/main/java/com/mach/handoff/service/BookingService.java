@@ -5,9 +5,9 @@ import com.mach.handoff.domain.bookings.dto.BookingResponseDto;
 import com.mach.handoff.domain.bookings.dto.CreateBookingDto;
 import com.mach.handoff.domain.enums.bookings.BookingStatus;
 import com.mach.handoff.domain.enums.roles.RoleName;
-import com.mach.handoff.domain.user.User;
 import com.mach.handoff.domain.exception.ForbiddenException;
 import com.mach.handoff.domain.exception.NotFoundException;
+import com.mach.handoff.domain.user.User;
 import com.mach.handoff.repository.BookingRepository;
 import com.mach.handoff.repository.EventRepository;
 import com.mach.handoff.service.validator.BookingValidator;
@@ -32,7 +32,7 @@ public class BookingService {
 
     public Booking create(CreateBookingDto dto, User user) {
         var event = eventRepository.findById(dto.eventId())
-                .orElseThrow(() -> new NotFoundException("Evento não encontrado."));
+                .orElseThrow(() -> new NotFoundException("Event not found."));
 
         validator.validate(dto, event, user);
 
@@ -61,13 +61,13 @@ public class BookingService {
         Optional<Booking> bookingOpt = bookingRepository.findById(id);
 
         if (bookingOpt.isEmpty()) {
-            throw new NotFoundException("Booking não encontrado.");
+            throw new NotFoundException("Booking not found.");
         }
 
         Booking booking = bookingOpt.get();
 
         if (!requester.equals(booking.getUser())) {
-            throw new ForbiddenException("Você não pode confirmar esse booking.");
+            throw new ForbiddenException("You can't confirm this booking.");
         }
 
         booking.confirm();
@@ -77,14 +77,14 @@ public class BookingService {
 
     public void cancel(Long bookingId, User requester) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+                .orElseThrow(() -> new NotFoundException("Booking not found."));
 
         boolean isOwner = booking.getUser().getCid().equals(requester.getCid());
         boolean isAdmin = requester.getRoles().stream()
                 .anyMatch(r -> r.getName() == RoleName.ADMIN || r.getName() == RoleName.STAFF);
 
         if (!isOwner && !isAdmin) {
-            throw new ForbiddenException("Você não tem permissão para cancelar esta reserva.");
+            throw new ForbiddenException("You don't have permission to cancel this booking.");
         }
 
         booking.cancel();
@@ -112,12 +112,12 @@ public class BookingService {
 
     public Booking get(Long id) {
         return bookingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+                .orElseThrow(() -> new NotFoundException("Booking not found."));
     }
 
     public void approve(Long id, User user) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+                .orElseThrow(() -> new NotFoundException("Booking not found."));
 
         booking.approve(user);
 
@@ -129,7 +129,7 @@ public class BookingService {
 
     public void reject(Long id, User user) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Booking não encontrado."));
+                .orElseThrow(() -> new NotFoundException("Booking not found."));
 
         booking.reject(user);
 

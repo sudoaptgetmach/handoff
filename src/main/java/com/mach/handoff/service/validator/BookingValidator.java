@@ -3,8 +3,8 @@ package com.mach.handoff.service.validator;
 import com.mach.handoff.domain.bookings.dto.CreateBookingDto;
 import com.mach.handoff.domain.enums.events.EventStatus;
 import com.mach.handoff.domain.events.Event;
-import com.mach.handoff.domain.user.User;
 import com.mach.handoff.domain.exception.ValidationException;
+import com.mach.handoff.domain.user.User;
 import com.mach.handoff.repository.BookingRepository;
 import org.springframework.stereotype.Component;
 

@@ -69,7 +69,7 @@ public class EventService {
     @Transactional
     public Event update(Long id, UpdateEventDto dto) {
         Event event = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Evento não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Event not found."));
 
         if (dto.name() != null) event.setName(dto.name());
         if (dto.description() != null) event.setDescription(dto.description());
@@ -83,7 +83,7 @@ public class EventService {
     @Transactional
     public void cancel(Long id) {
         Event event = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Evento não encontrado"));
+                .orElseThrow(() -> new NotFoundException("Event not found."));
 
         event.setStatus(EventStatus.CANCELLED);
         event.setVisible(false);

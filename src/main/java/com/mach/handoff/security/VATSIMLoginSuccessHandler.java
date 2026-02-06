@@ -6,11 +6,11 @@ import com.mach.handoff.service.auth.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.NonNull;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.http.ResponseCookie;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -18,9 +18,9 @@ import java.util.Objects;
 @Component
 public class VATSIMLoginSuccessHandler implements AuthenticationSuccessHandler {
 
+    private static final String AUTH_COOKIE_NAME = "auth_token";
     private final AuthService authService;
     private final TokenService tokenService;
-    private static final String AUTH_COOKIE_NAME = "auth_token";
 
     public VATSIMLoginSuccessHandler(AuthService authService, TokenService tokenService) {
         this.authService = authService;

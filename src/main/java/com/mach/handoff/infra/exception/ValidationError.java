@@ -2,9 +2,9 @@ package com.mach.handoff.infra.exception;
 
 import lombok.Getter;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.Instant;
 
 @Getter
 public class ValidationError extends StandardError {
@@ -18,5 +18,6 @@ public class ValidationError extends StandardError {
         errors.add(new FieldMessage(fieldName, message));
     }
 
-    public record FieldMessage(String field, String message) { }
+    public record FieldMessage(String field, String message) {
+    }
 }

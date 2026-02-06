@@ -6,6 +6,7 @@ import com.mach.handoff.domain.enums.bookings.BookingStatus;
 import com.mach.handoff.domain.enums.events.EventStatus;
 import com.mach.handoff.domain.enums.roles.RoleName;
 import com.mach.handoff.domain.events.Event;
+import com.mach.handoff.domain.events.dto.CreateEventDto;
 import com.mach.handoff.domain.roles.Role;
 import com.mach.handoff.domain.user.User;
 
@@ -34,12 +35,16 @@ public class TestDataFactory {
         return user;
     }
 
-    public CreateBookingDto createDto() {
-        return createDto("Teste", 1L, BASE_TIME.plusHours(1), BASE_TIME.plusHours(3));
+    public CreateBookingDto createBookingDto() {
+        return createBookingDto("Teste", 1L, BASE_TIME.plusHours(1), BASE_TIME.plusHours(3));
     }
 
-    public CreateBookingDto createDto(String position, Long eventId, LocalDateTime start, LocalDateTime end) {
+    public CreateBookingDto createBookingDto(String position, Long eventId, LocalDateTime start, LocalDateTime end) {
         return new CreateBookingDto(position, eventId, start, end);
+    }
+
+    public CreateEventDto createEventDto() {
+        return new CreateEventDto("Teste", "teste", "", BASE_TIME.plusHours(1), BASE_TIME.plusHours(3), Set.of("SBGR", "SBBR"), EventStatus.PUBLISHED, true);
     }
 
     public Event createOpenEvent() {
@@ -59,6 +64,16 @@ public class TestDataFactory {
                 .startTime(BASE_TIME.plusHours(1))
                 .endTime(BASE_TIME.plusHours(3))
                 .visible(true)
+                .build();
+    }
+
+    public Event createEvent(EventStatus status, Boolean visible) {
+        return Event.builder()
+                .id(1L)
+                .status(status)
+                .startTime(BASE_TIME.plusHours(1))
+                .endTime(BASE_TIME.plusHours(3))
+                .visible(visible)
                 .build();
     }
 

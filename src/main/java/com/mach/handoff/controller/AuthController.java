@@ -18,9 +18,9 @@ import java.util.Map;
 @RequestMapping("/login")
 public class AuthController {
 
+    private static final String AUTH_COOKIE_NAME = "auth_token";
     private final AuthService authService;
     private final TokenService tokenService;
-    private static final String AUTH_COOKIE_NAME = "auth_token";
 
     public AuthController(AuthService authService, TokenService tokenService) {
         this.authService = authService;

@@ -30,7 +30,7 @@ public class AuthService {
         Map<String, Object> data = (Map<String, Object>) attributes.get("data");
 
         if (data == null) {
-            throw new RuntimeException("Erro: O objeto 'data' não foi retornado pela VATSIM.");
+            throw new RuntimeException("Error: 'data' object was never returned by VATSIM.");
         }
 
         Object cidObj = data.get("cid");
@@ -50,7 +50,7 @@ public class AuthService {
                     newUser.setName(fullName);
 
                     Role defaultRole = roleRepository.findByName(RoleName.USER)
-                            .orElseThrow(() -> new RuntimeException("Role USER não encontrada no banco."));
+                            .orElseThrow(() -> new RuntimeException("USER role not found."));
 
                     newUser.setRoles(Set.of(defaultRole));
 

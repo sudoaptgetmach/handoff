@@ -30,6 +30,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BookingServiceTest {
 
+    TestDataFactory dataFactory = new TestDataFactory();
     @Mock
     private BookingRepository bookingRepository;
     @Mock
@@ -39,13 +40,11 @@ class BookingServiceTest {
     @InjectMocks
     private BookingService bookingService;
 
-    TestDataFactory dataFactory = new TestDataFactory();
-
     @Test
     void create_Success() {
         User requester = dataFactory.createTestUser();
         Event event = dataFactory.createOpenEvent();
-        CreateBookingDto dto = dataFactory.createDto();
+        CreateBookingDto dto = dataFactory.createBookingDto();
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
 
@@ -65,7 +64,7 @@ class BookingServiceTest {
     @Test
     void create_whenEventNotFound_throwsNotFound() {
         User requester = dataFactory.createTestUser();
-        CreateBookingDto dto = dataFactory.createDto();
+        CreateBookingDto dto = dataFactory.createBookingDto();
 
         when(eventRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -77,7 +76,7 @@ class BookingServiceTest {
     void create_whenEventRulesAreNotMet_throwsValidationError() {
         User requester = dataFactory.createTestUser();
         Event event = dataFactory.createEvent(EventStatus.BOOKINGS_CLOSED);
-        CreateBookingDto dto = dataFactory.createDto();
+        CreateBookingDto dto = dataFactory.createBookingDto();
 
         when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
         doThrow(new ValidationException("Regras do evento não atendidas."))
